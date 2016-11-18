@@ -49,8 +49,28 @@ def closest_to_edge_direction(location, height, width):
             break
         distance_west += 1
 
-    distances = np.array([distance_north, distance_east, distance_south, distance_west])
-    return CARDINALS[np.argmin(distances)]
+    if x - distance_west <= 0 and x + distance_east >= width - 1:
+        direction = NORTH
+    elif y + distance_south >= height - 1 and y - distance_north <= 0:
+        direction = EAST
+    elif x - distance_west <= 0 and x + distance_east != width - 1:
+        direction = EAST
+    elif x - distance_west != 0 and x + distance_east == width - 1:
+        direction = WEST
+    elif y + distance_south >= height - 1 and y - distance_north != 0:
+        direction = NORTH
+    elif y + distance_south != height - 1 and y - distance_north <= 0:
+        direction = SOUTH
+    else:
+        distances = np.array([distance_north, distance_east, distance_south, distance_west])
+        direction = CARDINALS[np.argmin(distances)]
+
+    target_cell = gameMap.getSite(location, direction)
+    current_cell = gameMap.getSite(location)
+    if target_cell.strength + current_cell.strength > 255:
+        return STILL
+    else:
+        return direction
 
 
 def surrouned_by_allies(location):
